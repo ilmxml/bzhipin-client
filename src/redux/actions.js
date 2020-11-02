@@ -21,7 +21,7 @@ import {
 } from './action-types'
 
 function initIO(dispatch,userid){
-    if(!io.socket)
+    if(!io.socket||!io.socket.connected)
         io.socket = io('ws://localhost:4000')
     io.socket.on('receiveMsg', function (chatMsg) {
         console.log('客户端接收服务器消息', chatMsg)
@@ -38,7 +38,10 @@ const errorMsg=(msg)=>({type:ERROR_MSG,data:msg})
 //接收用户的的同步action
 const receiveUser=(user)=>({type:RECEIVE_USER,data:user})
 //重置用户的同步action
-export const resetUser=(msg)=>({type:RESET_USER,data:msg})
+export const resetUser = (msg) => {
+  io.socket.disconnect()
+  return { type: RESET_USER, data: msg }
+}
 //获取用户列表的同步action
 const receiveUserList=(users)=>({type:RECEIVE_USER_LIST,data:users})
 //接收消息列表的同步action
